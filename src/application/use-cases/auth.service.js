@@ -20,7 +20,9 @@ export default class AuthService {
         }
 
         data.password = await HashService.hash(data.password);
-        const newUser = new UserEntity(data);
+        // AVQ: el rol nunca se toma del body; todo registro público es "user"
+        // (evita que cualquiera se registre como admin enviando role: "admin")
+        const newUser = new UserEntity({ ...data, role: "user" });
         const savedUser = await this.userRepository.save(newUser);
 
         if (this.auditRepository && savedUser) {
@@ -35,6 +37,16 @@ export default class AuthService {
         }
 
         return { message: "User registered successfully" };
+    }
+
+    // AVQ: crea el usuario administrador inicial desde variables de entorno (si no existe)
+    async seedAdmin({ name = "Administrador", email, password }) {
+        if (!email || !password) return;
+        const exist = await this.userRepository.findByEmail(email);
+        if (exist) return;
+        const hashed = await HashService.hash(password);
+        await this.userRepository.save(new UserEntity({ name, email, password: hashed, role: "admin" }));
+        console.log(`Seeded admin user ${email}`);
     }
 
     async login({ email, password }) {

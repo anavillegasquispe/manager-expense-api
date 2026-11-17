@@ -6,7 +6,7 @@ export class AppError extends Error {
         this.code = code;
         this.details = details;
         this.isOperational = true; 
-        error.captureStackTrace(this, this.constructor);
+        Error.captureStackTrace(this, this.constructor); // AVQ: corregido (antes "error." lanzaba ReferenceError)
     }
 }
 

@@ -19,6 +19,27 @@ const options = {
                     scheme: "bearer",
                     bearerFormat: "JWT"
                 }
+            },
+            // AVQ: esquemas y respuestas reutilizables
+            schemas: {
+                Error: {
+                    type: "object",
+                    properties: {
+                        error: { type: "string", example: "Mensaje de error" }
+                    }
+                }
+            },
+            responses: {
+                Unauthorized: {
+                    description: "Token ausente, inválido o expirado",
+                    content: { "application/json": { schema: { $ref: "#/components/schemas/Error" },
+                        example: { error: "Authorization header missing or invalid" } } }
+                },
+                Forbidden: {
+                    description: "El usuario no tiene el rol requerido",
+                    content: { "application/json": { schema: { $ref: "#/components/schemas/Error" },
+                        example: { error: "Forbidden: insufficient permissions" } } }
+                }
             }
         },
         security: [{ bearerAuth: [] }]

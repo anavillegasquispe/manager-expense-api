@@ -35,7 +35,11 @@ app.get('/api/v1/health', (req, res) => {
 });
 
 // Middleware de manejo de errores global
+// AVQ: respeta el statusCode de los AppError (400, 401, 403, 404, 409) y devuelve 500 en errores no controlados
 app.use((err, req, res, next) => {
+    if (err.isOperational) {
+        return res.status(err.statusCode).json({ error: err.message, code: err.code, details: err.details });
+    }
     console.error(err.stack);
     res.status(500).json({ error: 'Error interno del servidor' });
 });

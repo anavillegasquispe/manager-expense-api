@@ -37,10 +37,6 @@ const router = Router();
  *                 type: string
  *                 format: password
  *                 example: "secret123"
- *               role:
- *                 type: string
- *                 enum: [user, admin]
- *                 default: user
  *               baseCurrency:
  *                 type: string
  *                 example: "BOB"

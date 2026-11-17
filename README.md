@@ -12,6 +12,17 @@ API REST para la gestión de gastos e ingresos personales (Módulo III – Progr
 - **Bases de datos**: MongoDB (monedas y usuarios) y MySQL vía Sequelize (categorías, transacciones, presupuestos, auditoría), con datos semilla.
 - **Documentación** con Swagger / OpenAPI 3.0 en `/api-docs`.
 
+## Mejoras propias (AVQ)
+
+| Mejora | Detalle |
+|---|---|
+| **Seguridad en el registro** | El rol ya no se toma del body: todo registro público es `user`. Antes cualquiera podía registrarse como admin enviando `"role": "admin"`. |
+| **Autorización por rol aplicada** | `roleMiddleware` existía pero no se usaba. Ahora `POST /currencies` (modificar tipos de cambio) es solo para `admin`; un `user` recibe **403**. |
+| **Admin inicial** | Se crea al arrancar a partir de `ADMIN_EMAIL` / `ADMIN_PASSWORD` del `.env`. |
+| **Corrección de `AppError`** | Usaba `error.captureStackTrace` (ReferenceError); corregido a `Error.captureStackTrace`. |
+| **Manejador global de errores** | Respeta el `statusCode` de los `AppError` (400, 401, 403, 404, 409) en lugar de devolver siempre 500. |
+| **Swagger** | Esquema `Error` y respuestas reutilizables `Unauthorized` (401) y `Forbidden` (403) en `components`. |
+
 ## Cómo ejecutarlo
 
 1. Instalar dependencias:
@@ -28,6 +39,8 @@ API REST para la gestión de gastos e ingresos personales (Módulo III – Progr
    MYSQL_USER=root
    MYSQL_PASSWORD=<password>
    MYSQL_DB=bd_gastos
+   ADMIN_EMAIL=<correo del admin inicial>
+   ADMIN_PASSWORD=<password del admin inicial>
    ```
    La base de datos MySQL indicada en `MYSQL_DB` debe existir.
 3. Levantar el servidor:
