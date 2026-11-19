@@ -27,8 +27,8 @@ const router = Router();
  *           example: "Banco Nacional"
  *         type:
  *           type: string
- *           enum: [CASH, BANK, DEBIT_CARD, CREDIT_CARD, OTHER]
- *           example: "BANK"
+ *           enum: [EFECTIVO, BANCO, TARJETA_DEBITO, TARJETA_CREDITO, OTRO]
+ *           example: "BANCO"
  *         currency:
  *           type: string
  *           example: "BOB"
@@ -75,7 +75,7 @@ router.get("/", authMiddleware, walletController.getWallets);
  * @swagger
  * /wallets:
  *   post:
- *     summary: Crear una billetera o cuenta (efectivo, banco, tarjeta de débito...)
+ *     summary: Crear una billetera o cuenta (efectivo, banco, tarjeta de débito, etc.)
  *     tags: [Wallets]
  *     security:
  *       - bearerAuth: []
@@ -92,8 +92,8 @@ router.get("/", authMiddleware, walletController.getWallets);
  *                 example: "Banco Nacional"
  *               type:
  *                 type: string
- *                 enum: [CASH, BANK, DEBIT_CARD, CREDIT_CARD, OTHER]
- *                 example: "BANK"
+ *                 enum: [EFECTIVO, BANCO, TARJETA_DEBITO, TARJETA_CREDITO, OTRO]
+ *                 example: "BANCO"
  *               currency:
  *                 type: string
  *                 example: "BOB"

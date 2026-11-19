@@ -29,8 +29,8 @@ export default class WalletController {
             const result = await this.walletService.deleteWallet(id, req.user.id);
             res.status(200).json(result);
         } catch (error) {
-            const status = error.message === "Wallet not found" ? 404
-                : error.message.startsWith("Unauthorized") ? 403 : 400;
+            const status = error.message === "Billetera no encontrada" ? 404
+                : error.message.startsWith("No autorizado") ? 403 : 400;
             res.status(status).json({ error: error.message });
         }
     };

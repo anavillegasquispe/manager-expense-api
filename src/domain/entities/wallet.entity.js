@@ -1,5 +1,5 @@
 // AVQ: entidad Wallet (billetera o cuenta financiera del usuario)
-export const WALLET_TYPES = ["CASH", "BANK", "DEBIT_CARD", "CREDIT_CARD", "OTHER"];
+export const WALLET_TYPES = ["EFECTIVO", "BANCO", "TARJETA_DEBITO", "TARJETA_CREDITO", "OTRO"];
 
 export default class WalletEntity {
     constructor({ id, name, type, currency, initialBalance, description, userId }) {

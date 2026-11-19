@@ -8,16 +8,16 @@ export default class WalletService {
 
     async createWallet(data) {
         if (!data.name || !data.type) {
-            throw new Error("Name and type are required");
+            throw new Error("El nombre y el tipo son obligatorios");
         }
         if (!WALLET_TYPES.includes(data.type)) {
-            throw new Error(`Invalid wallet type. Must be one of: ${WALLET_TYPES.join(", ")}`);
+            throw new Error(`Tipo de billetera inválido. Debe ser uno de: ${WALLET_TYPES.join(", ")}`);
         }
         if (data.currency && !/^[A-Z]{3}$/.test(data.currency)) {
-            throw new Error("Currency must be a 3-letter ISO code (e.g. BOB, USD)");
+            throw new Error("La moneda debe ser un código ISO de 3 letras (ej. BOB, USD)");
         }
         if (data.initialBalance !== undefined && isNaN(Number(data.initialBalance))) {
-            throw new Error("Initial balance must be a number");
+            throw new Error("El saldo inicial debe ser un número");
         }
 
         const wallet = new WalletEntity(data);
@@ -30,10 +30,10 @@ export default class WalletService {
 
     async deleteWallet(id, userId) {
         const wallet = await this.walletRepository.findById(id);
-        if (!wallet) throw new Error("Wallet not found");
-        if (wallet.userId !== userId) throw new Error("Unauthorized: You can only delete your own wallets");
+        if (!wallet) throw new Error("Billetera no encontrada");
+        if (wallet.userId !== userId) throw new Error("No autorizado: solo puedes eliminar tus propias billeteras");
 
         await this.walletRepository.delete(id);
-        return { message: "Wallet deleted successfully" };
+        return { message: "Billetera eliminada correctamente" };
     }
 }
