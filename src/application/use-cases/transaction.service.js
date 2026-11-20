@@ -2,12 +2,27 @@ import TransactionEntity from "../../domain/entities/transaction.entity.js";
 import AuditEntity from "../../domain/entities/audit.entity.js";
 
 export default class TransactionService {
-    constructor(transactionRepository, currencyRepository, categoryRepository, budgetRepository = null, auditRepository = null) {
+    constructor(transactionRepository, currencyRepository, categoryRepository, budgetRepository = null, auditRepository = null, walletRepository = null) {
         this.transactionRepository = transactionRepository;
         this.currencyRepository = currencyRepository;
         this.categoryRepository = categoryRepository;
         this.budgetRepository = budgetRepository;
         this.auditRepository = auditRepository;
+        this.walletRepository = walletRepository; // AVQ
+    }
+
+    // AVQ: valida que la billetera exista y pertenezca al usuario.
+    // walletId es opcional: si no viene (undefined) o es null, no se valida.
+    async validateWallet(walletId, userId) {
+        if (walletId === undefined || walletId === null) return;
+        if (!Number.isInteger(Number(walletId))) {
+            throw new Error("walletId debe ser un número entero");
+        }
+        const wallet = await this.walletRepository.findById(walletId);
+        if (!wallet) throw new Error("Billetera no encontrada");
+        if (wallet.userId !== userId) {
+            throw new Error("No autorizado: la billetera no pertenece al usuario");
+        }
     }
 
     async createTransaction(data) {
@@ -25,6 +40,8 @@ export default class TransactionService {
         if (category.type !== data.type) {
             throw new Error(`Category type mismatch: category is ${category.type}`);
         }
+
+        await this.validateWallet(data.walletId, data.userId); // AVQ
 
         const txDate = data.date || new Date().toISOString().split("T")[0];
         const currencyCode = (data.currency || "BOB").toUpperCase();
@@ -96,6 +113,9 @@ export default class TransactionService {
         if (existing.userId !== userId) {
             throw new Error("Unauthorized: You can only update your own transactions");
         }
+
+        // AVQ: permite asignar, cambiar o quitar (walletId: null) la billetera
+        await this.validateWallet(data.walletId, userId);
 
         const txDate = data.date || existing.date;
         const currencyCode = (data.currency || existing.currency).toUpperCase();

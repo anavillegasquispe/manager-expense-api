@@ -1,5 +1,6 @@
 import { DataTypes, Op, fn, col } from "sequelize";
 import sequelize from "./connection.js";
+import { WalletModel } from "./wallet.mysql.repository.js";
 
 export const TransactionModel = sequelize.define("Transaction", {
     type: { type: DataTypes.ENUM("INCOME", "EXPENSE"), allowNull: false },
@@ -12,7 +13,17 @@ export const TransactionModel = sequelize.define("Transaction", {
     description: { type: DataTypes.STRING },
     date: { type: DataTypes.DATEONLY, allowNull: false },
     categoryId: { type: DataTypes.INTEGER, allowNull: false },
-    userId: { type: DataTypes.STRING, allowNull: false }
+    userId: { type: DataTypes.STRING, allowNull: false },
+    // AVQ: billetera opcional (allowNull) para no romper las transacciones previas.
+    // Si se elimina la billetera, la transacción se conserva y walletId pasa a null.
+    walletId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
+        references: { model: WalletModel, key: "id" },
+        onDelete: "SET NULL",
+        onUpdate: "CASCADE"
+    }
 }, { timestamps: true });
 
 export default class TransactionMySQLRepository {
@@ -28,7 +39,8 @@ export default class TransactionMySQLRepository {
             description: txEntity.description,
             date: txEntity.date,
             categoryId: txEntity.categoryId,
-            userId: txEntity.userId
+            userId: txEntity.userId,
+            walletId: txEntity.walletId
         });
         return tx.toJSON();
     }

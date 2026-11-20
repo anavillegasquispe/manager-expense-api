@@ -11,7 +11,8 @@ export default class TransactionEntity {
         description,
         date,
         categoryId,
-        userId
+        userId,
+        walletId
     }) {
         this.id = id;
         this.type = type;
@@ -27,6 +28,8 @@ export default class TransactionEntity {
         this.date = date || new Date().toISOString().split("T")[0];
         this.categoryId = categoryId;
         this.userId = userId;
+        // AVQ: billetera opcional; las transacciones sin billetera quedan en null
+        this.walletId = walletId ?? null;
     }
 }
 

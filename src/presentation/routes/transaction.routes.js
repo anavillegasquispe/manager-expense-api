@@ -6,6 +6,7 @@ import CurrencyMongoRepository from "../../infrastructure/database/mongo/currenc
 import CategoryMySQLRepository from "../../infrastructure/database/mysql/category.mysql.repository.js";
 import BudgetMySQLRepository from "../../infrastructure/database/mysql/budget.mysql.repository.js";
 import AuditMySQLRepository from "../../infrastructure/database/mysql/audit.mysql.repository.js";
+import WalletMySQLRepository from "../../infrastructure/database/mysql/wallet.mysql.repository.js"; // AVQ
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 // Inyección de dependencias
@@ -14,13 +15,15 @@ const currencyRepository = new CurrencyMongoRepository();
 const categoryRepository = new CategoryMySQLRepository();
 const budgetRepository = new BudgetMySQLRepository();
 const auditRepository = new AuditMySQLRepository();
+const walletRepository = new WalletMySQLRepository(); // AVQ
 
 const transactionService = new TransactionService(
     transactionRepository,
     currencyRepository,
     categoryRepository,
     budgetRepository,
-    auditRepository
+    auditRepository,
+    walletRepository
 );
 const transactionController = new TransactionController(transactionService);
 
@@ -61,6 +64,11 @@ const router = Router();
  *               categoryId:
  *                 type: integer
  *                 example: 3
+ *               walletId:
+ *                 type: integer
+ *                 nullable: true
+ *                 description: (Opcional) Billetera o cuenta a la que se asocia la transacción. Debe pertenecer al usuario.
+ *                 example: 4
  *     responses:
  *       201:
  *         description: Transacción creada y convertida con el tipo de cambio del día
@@ -109,6 +117,10 @@ router.get("/", authMiddleware, transactionController.getTransactionsByUserId);
  *                 type: string
  *               description:
  *                 type: string
+ *               walletId:
+ *                 type: integer
+ *                 nullable: true
+ *                 description: (Opcional) Asignar o cambiar la billetera. Enviar null para desvincularla.
  *     responses:
  *       200:
  *         description: Transacción actualizada
