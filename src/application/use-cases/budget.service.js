@@ -10,10 +10,10 @@ export default class BudgetService {
 
     async createOrUpdateBudget(data) {
         if (!data.amountLimit || !data.month || !data.year || !data.categoryId || !data.userId) {
-            throw new Error("amountLimit, month, year, categoryId and userId are required");
+            throw new Error("amountLimit, month, year, categoryId y userId son obligatorios");
         }
         if (Number(data.amountLimit) <= 0) {
-            throw new Error("Budget amountLimit must be greater than zero");
+            throw new Error("El límite del presupuesto (amountLimit) debe ser mayor a cero");
         }
 
         const budget = new BudgetEntity(data);
@@ -59,11 +59,11 @@ export default class BudgetService {
 
     async deleteBudget(id, userId) {
         const budget = await this.budgetRepository.findById(id);
-        if (!budget) throw new Error("Budget not found");
-        if (budget.userId !== userId) throw new Error("Unauthorized");
+        if (!budget) throw new Error("Presupuesto no encontrado");
+        if (budget.userId !== userId) throw new Error("No autorizado: solo puedes eliminar tus propios presupuestos");
 
         await this.budgetRepository.delete(id);
-        return { message: "Budget deleted successfully" };
+        return { message: "Presupuesto eliminado correctamente" };
     }
 }
 

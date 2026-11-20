@@ -33,12 +33,12 @@ const options = {
                 Unauthorized: {
                     description: "Token ausente, inválido o expirado",
                     content: { "application/json": { schema: { $ref: "#/components/schemas/Error" },
-                        example: { error: "Authorization header missing or invalid" } } }
+                        example: { error: "Falta el encabezado Authorization o no es válido" } } }
                 },
                 Forbidden: {
                     description: "El usuario no tiene el rol requerido",
                     content: { "application/json": { schema: { $ref: "#/components/schemas/Error" },
-                        example: { error: "Forbidden: insufficient permissions" } } }
+                        example: { error: "Prohibido: no tienes permisos suficientes" } } }
                 }
             }
         },

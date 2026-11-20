@@ -11,12 +11,12 @@ export default class AuthService {
 
     async register(data) {
         if (!data.name || !data.email || !data.password) {
-            throw new Error("Name, email and password are required");
+            throw new Error("El nombre, el correo y la contraseña son obligatorios");
         }
 
         const exist = await this.userRepository.findByEmail(data.email);
         if (exist) {
-            throw new Error("Email already in use");
+            throw new Error("El correo ya está registrado");
         }
 
         data.password = await HashService.hash(data.password);
@@ -36,7 +36,7 @@ export default class AuthService {
             }));
         }
 
-        return { message: "User registered successfully" };
+        return { message: "Usuario registrado correctamente" };
     }
 
     // AVQ: crea el usuario administrador inicial desde variables de entorno (si no existe)
@@ -46,18 +46,18 @@ export default class AuthService {
         if (exist) return;
         const hashed = await HashService.hash(password);
         await this.userRepository.save(new UserEntity({ name, email, password: hashed, role: "admin" }));
-        console.log(`Seeded admin user ${email}`);
+        console.log(`Usuario administrador inicial creado: ${email}`);
     }
 
     async login({ email, password }) {
         const user = await this.userRepository.findByEmail(email);
         if (!user) {
-            throw new Error("Invalid credentials");
+            throw new Error("Credenciales inválidas");
         }
 
         const isMatch = await HashService.compare(password, user.password);
         if (!isMatch) {
-            throw new Error("Invalid credentials");
+            throw new Error("Credenciales inválidas");
         }
 
         const token = JwtService.generateToken({

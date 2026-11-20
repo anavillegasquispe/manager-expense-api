@@ -27,18 +27,18 @@ export default class TransactionService {
 
     async createTransaction(data) {
         if (!data.type || !data.amount || !data.categoryId || !data.userId) {
-            throw new Error("Type, amount, categoryId and userId are required");
+            throw new Error("El tipo, el monto, categoryId y userId son obligatorios");
         }
         if (Number(data.amount) <= 0) {
-            throw new Error("Amount must be greater than zero");
+            throw new Error("El monto debe ser mayor a cero");
         }
 
         const category = await this.categoryRepository.findById(data.categoryId);
         if (!category) {
-            throw new Error("Category not found");
+            throw new Error("Categoría no encontrada");
         }
         if (category.type !== data.type) {
-            throw new Error(`Category type mismatch: category is ${category.type}`);
+            throw new Error(`El tipo no coincide con la categoría: la categoría es de tipo ${category.type}`);
         }
 
         await this.validateWallet(data.walletId, data.userId); // AVQ
@@ -48,7 +48,7 @@ export default class TransactionService {
 
         const rateRecord = await this.currencyRepository.findByCodeAndDate(currencyCode, txDate);
         if (!rateRecord) {
-            throw new Error(`Exchange rate not found for currency ${currencyCode} on date ${txDate}`);
+            throw new Error(`No se encontró el tipo de cambio de ${currencyCode} para la fecha ${txDate}`);
         }
 
         const transaction = new TransactionEntity({
@@ -109,9 +109,9 @@ export default class TransactionService {
 
     async updateTransaction(id, data, userId) {
         const existing = await this.transactionRepository.findById(id);
-        if (!existing) throw new Error("Transaction not found");
+        if (!existing) throw new Error("Transacción no encontrada");
         if (existing.userId !== userId) {
-            throw new Error("Unauthorized: You can only update your own transactions");
+            throw new Error("No autorizado: solo puedes modificar tus propias transacciones");
         }
 
         // AVQ: permite asignar, cambiar o quitar (walletId: null) la billetera
@@ -123,7 +123,7 @@ export default class TransactionService {
 
         const rateRecord = await this.currencyRepository.findByCodeAndDate(currencyCode, txDate);
         if (!rateRecord) {
-            throw new Error(`Exchange rate not found for currency ${currencyCode} on date ${txDate}`);
+            throw new Error(`No se encontró el tipo de cambio de ${currencyCode} para la fecha ${txDate}`);
         }
 
         const updatedPayload = {
@@ -154,9 +154,9 @@ export default class TransactionService {
 
     async deleteTransaction(id, userId) {
         const existing = await this.transactionRepository.findById(id);
-        if (!existing) throw new Error("Transaction not found");
+        if (!existing) throw new Error("Transacción no encontrada");
         if (existing.userId !== userId) {
-            throw new Error("Unauthorized: You can only delete your own transactions");
+            throw new Error("No autorizado: solo puedes eliminar tus propias transacciones");
         }
 
         await this.transactionRepository.delete(id);
@@ -171,7 +171,7 @@ export default class TransactionService {
             }));
         }
 
-        return { message: "Transaction deleted successfully" };
+        return { message: "Transacción eliminada correctamente" };
     }
 }
 

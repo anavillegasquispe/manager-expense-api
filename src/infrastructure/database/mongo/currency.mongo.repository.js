@@ -36,7 +36,7 @@ export default class CurrencyMongoRepository {
                 { code: "USD", name: "Dólar Estadounidense", symbol: "$", exchangeRate: 6.96, date: today },
                 { code: "EUR", name: "Euro", symbol: "€", exchangeRate: 7.55, date: today }
             ]);
-            console.log("Seeded default currencies in MongoDB");
+            console.log("Monedas iniciales cargadas en MongoDB");
         }
     }
 }

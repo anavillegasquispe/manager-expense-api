@@ -14,10 +14,10 @@ export default class CurrencyService {
 
     async saveCurrencyRateByDate(data, userId) {
         if (!data.code || !data.name || !data.exchangeRate) {
-            throw new Error("Code, name and exchangeRate are required");
+            throw new Error("El código, el nombre y el tipo de cambio (exchangeRate) son obligatorios");
         }
         if (Number(data.exchangeRate) <= 0) {
-            throw new Error("Exchange rate must be greater than zero");
+            throw new Error("El tipo de cambio debe ser mayor a cero");
         }
 
         const currencyEntity = new CurrencyEntity(data);
@@ -43,12 +43,12 @@ export default class CurrencyService {
 
     async getCurrencyRateByDate(code, date, userId = null) {
         if (!code || !date) {
-            throw new Error("Currency code and date are required");
+            throw new Error("El código de moneda y la fecha son obligatorios");
         }
 
         const rateRecord = await this.currencyRepository.findByCodeAndDate(code.toUpperCase(), date);
         if (!rateRecord) {
-            throw new Error("Exchange rate not found for the specified date");
+            throw new Error("No se encontró el tipo de cambio para la fecha indicada");
         }
 
         let relatedTransactions = [];

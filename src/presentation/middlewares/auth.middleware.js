@@ -3,7 +3,7 @@ import JwtService from "../../infrastructure/security/jwt.service.js";
 export const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Authorization header missing or invalid" });
+        return res.status(401).json({ error: "Falta el encabezado Authorization o no es válido" });
     }
     const token = authHeader.split(" ")[1];
     try {
@@ -11,7 +11,7 @@ export const authMiddleware = (req, res, next) => {
         req.user = payload;
         next();
     } catch (error) {
-        return res.status(401).json({ error: "Invalid token" });
+        return res.status(401).json({ error: "Token inválido o expirado" });
     }
 };
 

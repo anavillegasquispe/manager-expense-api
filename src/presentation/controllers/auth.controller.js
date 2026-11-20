@@ -15,7 +15,7 @@ export default class AuthController {
     login = async (req, res) => {
         const { email, password } = req.body;
         if (!email || !password) {
-            return res.status(400).json({ error: "Email and password are required" });
+            return res.status(400).json({ error: "El correo y la contraseña son obligatorios" });
         }
         try {
             const result = await this.authService.login(req.body);

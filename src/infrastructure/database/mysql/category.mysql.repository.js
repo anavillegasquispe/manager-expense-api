@@ -59,7 +59,7 @@ export default class CategoryMySQLRepository {
                 { name: "Vivienda y Servicios", type: "EXPENSE", description: "Alquiler, luz, agua e internet", isDefault: true },
                 { name: "Educación", type: "EXPENSE", description: "Cursos, libros y posgrado", isDefault: true }
             ]);
-            console.log("Seeded default categories in MySQL");
+            console.log("Categorías iniciales cargadas en MySQL");
         }
     }
 }
