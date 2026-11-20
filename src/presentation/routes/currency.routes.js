@@ -34,7 +34,7 @@ router.get("/", authMiddleware, currencyController.getAllCurrencies);
  * @swagger
  * /currencies:
  *   post:
- *     summary: Registrar o actualizar el tipo de cambio de una moneda en una fecha específica (solo admin)
+ *     summary: Registrar o actualizar el tipo de cambio de una moneda en una fecha específica (solo para admin)
  *     description: Requiere un token de un usuario con rol **admin**. Los usuarios con rol user reciben 403.
  *     tags: [Currencies]
  *     security:
