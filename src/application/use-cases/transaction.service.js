@@ -1,5 +1,6 @@
 import TransactionEntity from "../../domain/entities/transaction.entity.js";
 import AuditEntity from "../../domain/entities/audit.entity.js";
+import { NotFoundError, ForbiddenError } from "../../domain/errors/AppError.js"; // AVQ
 
 export default class TransactionService {
     constructor(transactionRepository, currencyRepository, categoryRepository, budgetRepository = null, auditRepository = null, walletRepository = null) {
@@ -25,6 +26,45 @@ export default class TransactionService {
         }
     }
 
+    // AVQ: isPrivate es opcional, pero si viene debe ser booleano (true/false)
+    validateIsPrivate(isPrivate) {
+        if (isPrivate !== undefined && typeof isPrivate !== "boolean") {
+            throw new Error("isPrivate debe ser true o false");
+        }
+    }
+
+    // AVQ: comprobante público de una transacción (sin token).
+    // Deniega el acceso si la transacción es privada y nunca expone datos internos (userId, currencyRateId).
+    async getPublicReceipt(id) {
+        if (!Number.isInteger(Number(id)) || Number(id) <= 0) {
+            throw new NotFoundError("Transacción no encontrada");
+        }
+        const tx = await this.transactionRepository.findById(id);
+        if (!tx) throw new NotFoundError("Transacción no encontrada");
+        if (tx.isPrivate) {
+            throw new ForbiddenError("Esta transacción es privada y no se puede compartir");
+        }
+
+        const category = await this.categoryRepository.findById(tx.categoryId);
+        const wallet = tx.walletId && this.walletRepository
+            ? await this.walletRepository.findById(tx.walletId)
+            : null;
+
+        return {
+            comprobante: `TX-${String(tx.id).padStart(6, "0")}`,
+            tipo: tx.type === "INCOME" ? "Ingreso" : "Egreso",
+            fecha: tx.date,
+            descripcion: tx.description,
+            categoria: category ? category.name : null,
+            billetera: wallet ? wallet.name : null,
+            monto: Number(tx.amount),
+            moneda: tx.currency,
+            tipoDeCambio: Number(tx.exchangeRate),
+            montoConvertidoBOB: Number(tx.convertedAmount),
+            registradoEl: tx.createdAt
+        };
+    }
+
     async createTransaction(data) {
         if (!data.type || !data.amount || !data.categoryId || !data.userId) {
             throw new Error("El tipo, el monto, categoryId y userId son obligatorios");
@@ -42,6 +82,7 @@ export default class TransactionService {
         }
 
         await this.validateWallet(data.walletId, data.userId); // AVQ
+        this.validateIsPrivate(data.isPrivate); // AVQ
 
         const txDate = data.date || new Date().toISOString().split("T")[0];
         const currencyCode = (data.currency || "BOB").toUpperCase();
@@ -116,6 +157,7 @@ export default class TransactionService {
 
         // AVQ: permite asignar, cambiar o quitar (walletId: null) la billetera
         await this.validateWallet(data.walletId, userId);
+        this.validateIsPrivate(data.isPrivate);
 
         const txDate = data.date || existing.date;
         const currencyCode = (data.currency || existing.currency).toUpperCase();

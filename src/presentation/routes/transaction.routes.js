@@ -69,6 +69,11 @@ const router = Router();
  *                 nullable: true
  *                 description: (Opcional) Billetera o cuenta a la que se asocia la transacción. Debe pertenecer al usuario.
  *                 example: 4
+ *               isPrivate:
+ *                 type: boolean
+ *                 default: true
+ *                 description: (Opcional) Si es false, el comprobante se puede ver sin token en /transactions/{id}/public. Por defecto es privada.
+ *                 example: false
  *     responses:
  *       201:
  *         description: Transacción creada y convertida con el tipo de cambio del día
@@ -121,11 +126,60 @@ router.get("/", authMiddleware, transactionController.getTransactionsByUserId);
  *                 type: integer
  *                 nullable: true
  *                 description: (Opcional) Asignar o cambiar la billetera. Enviar null para desvincularla.
+ *               isPrivate:
+ *                 type: boolean
+ *                 description: (Opcional) false para compartir el comprobante por enlace, true para volverlo privado.
  *     responses:
  *       200:
  *         description: Transacción actualizada
  */
 router.put("/:id", authMiddleware, transactionController.updateTransaction);
+
+/**
+ * @swagger
+ * /transactions/{id}/public:
+ *   get:
+ *     summary: Ver el comprobante público de una transacción (sin token)
+ *     description: |
+ *       Ruta pública: **no requiere token JWT**, ideal para compartir el comprobante por enlace.
+ *       Solo funciona si la transacción tiene `isPrivate: false`; si es privada responde 403.
+ *       No expone datos internos como el userId.
+ *     tags: [Transactions]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Comprobante de la transacción
+ *         content:
+ *           application/json:
+ *             example:
+ *               comprobante: "TX-000004"
+ *               tipo: "Ingreso"
+ *               fecha: "2026-11-17"
+ *               descripcion: "Salario"
+ *               categoria: "Salario"
+ *               billetera: "Banco Nacional"
+ *               monto: 3000
+ *               moneda: "BOB"
+ *               tipoDeCambio: 1
+ *               montoConvertidoBOB: 3000
+ *               registradoEl: "2026-11-20T00:20:00.000Z"
+ *       403:
+ *         description: La transacción es privada
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Esta transacción es privada y no se puede compartir"
+ *       404:
+ *         description: Transacción no encontrada
+ */
+// AVQ: ruta pública — a propósito SIN authMiddleware
+router.get("/:id/public", transactionController.getPublicReceipt);
 
 /**
  * @swagger

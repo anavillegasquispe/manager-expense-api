@@ -32,6 +32,17 @@ export default class TransactionController {
         }
     };
 
+    // AVQ: comprobante público (ruta sin authMiddleware)
+    getPublicReceipt = async (req, res) => {
+        const { id } = req.params;
+        try {
+            const receipt = await this.transactionService.getPublicReceipt(id);
+            res.status(200).json(receipt);
+        } catch (error) {
+            res.status(error.statusCode || 500).json({ error: error.message });
+        }
+    };
+
     deleteTransaction = async (req, res) => {
         const { id } = req.params;
         try {

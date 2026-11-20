@@ -23,7 +23,9 @@ export const TransactionModel = sequelize.define("Transaction", {
         references: { model: WalletModel, key: "id" },
         onDelete: "SET NULL",
         onUpdate: "CASCADE"
-    }
+    },
+    // AVQ: privada por defecto (también para las transacciones previas)
+    isPrivate: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }
 }, { timestamps: true });
 
 export default class TransactionMySQLRepository {
@@ -40,7 +42,8 @@ export default class TransactionMySQLRepository {
             date: txEntity.date,
             categoryId: txEntity.categoryId,
             userId: txEntity.userId,
-            walletId: txEntity.walletId
+            walletId: txEntity.walletId,
+            isPrivate: txEntity.isPrivate
         });
         return tx.toJSON();
     }

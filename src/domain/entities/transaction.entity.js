@@ -12,7 +12,8 @@ export default class TransactionEntity {
         date,
         categoryId,
         userId,
-        walletId
+        walletId,
+        isPrivate
     }) {
         this.id = id;
         this.type = type;
@@ -30,6 +31,8 @@ export default class TransactionEntity {
         this.userId = userId;
         // AVQ: billetera opcional; las transacciones sin billetera quedan en null
         this.walletId = walletId ?? null;
+        // AVQ: privada por defecto; solo se comparte por enlace si el dueño la marca isPrivate: false
+        this.isPrivate = isPrivate ?? true;
     }
 }
 
